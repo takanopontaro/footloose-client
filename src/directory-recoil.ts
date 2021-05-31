@@ -55,6 +55,21 @@ export const displayDirectoryPathState = selectorFamily<string, string>({
     },
 });
 
+export const parentDirectoryPathState = selectorFamily<string, string>({
+  key: 'directory/parentDirectoryPath',
+  get:
+    (frameId) =>
+    ({ get }) => {
+      const originalEntries = get(originalEntriesState(frameId));
+      const firstEntry = originalEntries[0];
+      if (!firstEntry?.parent) {
+        return '';
+      }
+      const directoryPath = get(directoryPathState(frameId));
+      return VirtualDirectories.parent(firstEntry.path, directoryPath);
+    },
+});
+
 export const directoryStatusState = atomFamily<string, string>({
   key: 'directory/directoryStatus',
   default: '',

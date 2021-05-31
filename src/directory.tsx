@@ -24,6 +24,7 @@ import {
   displayDirectoryPathState,
   entryFilterState,
   entrySortsState,
+  parentDirectoryPathState,
   previewMakerState,
   sortedEntriesRefState,
   sortedEntriesState,
@@ -38,6 +39,8 @@ const DirectoryComponent: FC<IProps> = ({ id }) => {
   const dateTimeFormat = getCssCustomProperty('--date-time-format');
 
   const displayDirectoryPath = useRecoilValue(displayDirectoryPathState(id));
+
+  const parentDirectoryPath = useRecoilValue(parentDirectoryPathState(id));
 
   const directoryStatus = useRecoilValue(directoryStatusState(id));
 
@@ -186,7 +189,7 @@ const DirectoryComponent: FC<IProps> = ({ id }) => {
                   data-active="false"
                   data-index={i}
                   data-parent={entry.parent}
-                  data-path={entry.path}
+                  data-path={entry.parent ? parentDirectoryPath : entry.path}
                   data-type={entry.type}
                   data-mime={entry.mime}
                 >

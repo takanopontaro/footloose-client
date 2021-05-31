@@ -34,6 +34,11 @@ class VirtualDirectoriesClass {
     return vd ? path.replace(vd.actual, vd.virtual) : path;
   }
 
+  parent(parentPath: string, path: string): string {
+    const vd = this.list.find((item) => item.actual === path);
+    return vd ? vd.virtual.replace(/[/\\][^/\\]+$/, '') : parentPath;
+  }
+
   createDataSet(paths: string[]): IItemSelectorItemData[] {
     return [...paths].reverse().map((path, i) => {
       const data: IItemSelectorItemData = { id: String(i), value: path };

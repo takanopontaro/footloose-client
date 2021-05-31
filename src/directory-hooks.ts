@@ -61,6 +61,7 @@ import {
   openPathAppsState,
   originalEntriesRefState,
   originalEntriesState,
+  parentDirectoryPathState,
   previewMakerState,
   selectedRowsOnlyState,
   sortedEntriesRefState,
@@ -127,6 +128,12 @@ export function useGetActiveDirectoryFrameId(): () => Promise<string> {
 
 export function useGetDirectoryPath(): (frameId?: string) => Promise<string> {
   return useGetDirectoryRecoilValue(directoryPathState);
+}
+
+export function useGetParentDirectoryPath(): (
+  frameId?: string
+) => Promise<string> {
+  return useGetDirectoryRecoilValue(parentDirectoryPathState);
 }
 
 export function useGetTargetDirectoryFrameId(): (
@@ -842,6 +849,23 @@ export function useChangeDirectoryWithPrompt(): (
   );
 }
 
+export function useChangeToParentDirectory(): (
+  pushHistory?: boolean,
+  frameId?: string
+) => Promise<void> {
+  const getParentDirectoryPath = useGetParentDirectoryPath();
+  const changeDirectory = useChangeDirectory();
+  return useCallback(
+    async (pushHistory, frameId) => {
+      const path = await getParentDirectoryPath(frameId);
+      if (path) {
+        await changeDirectory(path, pushHistory, frameId);
+      }
+    },
+    [changeDirectory, getParentDirectoryPath]
+  );
+}
+
 export function useMatchDirectoryPaths(): (
   changeSelf: boolean,
   frameId?: string
@@ -1434,6 +1458,7 @@ export function useDirectoryExports() {
   const getFrameEl = useGetDirectoryFrameEl();
   const getActiveDirectoryFrameId = useGetActiveDirectoryFrameId();
   const getDirectoryPath = useGetDirectoryPath();
+  const getParentDirectoryPath = useGetParentDirectoryPath();
   const getTargetDirectoryFrameId = useGetTargetDirectoryFrameId();
   const getTargetDirectoryPath = useGetTargetDirectoryPath();
   const getEntryFilter = useGetEntryFilter();
@@ -1474,6 +1499,7 @@ export function useDirectoryExports() {
   const toggleRowSort = useToggleRowSort();
   const changeDirectory = useChangeDirectory();
   const changeDirectoryWithPrompt = useChangeDirectoryWithPrompt();
+  const changeToParentDirectory = useChangeToParentDirectory();
   const matchDirectoryPaths = useMatchDirectoryPaths();
   const exchangeDirectoryPaths = useExchangeDirectoryPaths();
   const refresh = useRefreshDirectory();
@@ -1497,6 +1523,7 @@ export function useDirectoryExports() {
       getFrameEl,
       getActiveDirectoryFrameId,
       getDirectoryPath,
+      getParentDirectoryPath,
       getTargetDirectoryFrameId,
       getTargetDirectoryPath,
       getEntryFilter,
@@ -1537,6 +1564,7 @@ export function useDirectoryExports() {
       toggleRowSort,
       changeDirectory,
       changeDirectoryWithPrompt,
+      changeToParentDirectory,
       matchDirectoryPaths,
       exchangeDirectoryPaths,
       refresh,
@@ -1560,6 +1588,7 @@ export function useDirectoryExports() {
       bookmarkCurrentDirectory,
       changeDirectory,
       changeDirectoryWithPrompt,
+      changeToParentDirectory,
       clearDirectoryError,
       copy,
       copyCurrentDirectoryPath,
@@ -1580,6 +1609,7 @@ export function useDirectoryExports() {
       getFrameTypeList,
       getHistory,
       getOriginalEntriesRef,
+      getParentDirectoryPath,
       getRowSorts,
       getSelectedEntries,
       getSortedEntriesRef,

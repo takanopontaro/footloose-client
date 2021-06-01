@@ -5,12 +5,14 @@ const histories = new Map<string, History>();
 
 class History {
   maxIndex = 1000;
+  frameId: string;
   key: string;
   currentIndex = -1;
   previousPath = '';
   paths: string[] = [];
 
   constructor(frameId: string) {
+    this.frameId = frameId;
     this.key = `history.${frameId}`;
     if (Settings.persistent) {
       this.load();
@@ -126,7 +128,7 @@ class History {
   load(): void {
     const paths = Settings.read(this.key, []);
     this.paths = paths.filter((path) => !VirtualDirectories.includes(path));
-    VirtualDirectories.clear();
+    VirtualDirectories.markAsRead(this.frameId);
   }
 }
 

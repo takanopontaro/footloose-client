@@ -1,3 +1,4 @@
+import { DIRECTORY_ID_LIST } from './directory-lib';
 import { IItemData as IItemSelectorItemData } from './item-selector-typings';
 import { Settings } from './settings';
 
@@ -9,11 +10,19 @@ type IVirtualDirectory = {
 class VirtualDirectoriesClass {
   key = 'virtualDirectories';
   list: IVirtualDirectory[] = [];
+  readFlags = this.buildReadFlags();
 
   constructor() {
     if (Settings.persistent) {
       this.list = Settings.read(this.key, []);
     }
+  }
+
+  buildReadFlags(): Record<string, boolean> {
+    return DIRECTORY_ID_LIST.reduce<Record<string, boolean>>((flags, id) => {
+      flags[id] = false;
+      return flags;
+    }, {});
   }
 
   register(actual: string, virtual: string): void {
@@ -60,6 +69,14 @@ class VirtualDirectoriesClass {
 
   clear(): void {
     this.list = [];
+  }
+
+  markAsRead(frameId: string): void {
+    this.readFlags[frameId] = true;
+    const unreadExists = Object.values(this.readFlags).includes(false);
+    if (!unreadExists) {
+      this.clear();
+    }
   }
 }
 
